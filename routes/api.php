@@ -14,6 +14,7 @@ use App\Http\Controllers\FooterController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\MobileMockUpController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UpdateController;
 
 /*
@@ -48,6 +49,13 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api')
 Route::post('password/email', [AuthController::class, 'sendResetOTP']);
 Route::post('password/verify-otp', [AuthController::class, 'verifyResetOTP'])->name('password.verify-otp');
 Route::post('password/reset', [AuthController::class, 'passwordReset'])->name('password.reset');
+
+
+// //settings(backend) which is namely settings
+Route::middleware('auth:api')->group(function () {
+    Route::put('settings/password', [SettingController::class, 'storeOrUpdatePassword']);
+    Route::post('settings/info', [SettingController::class, 'storeOrUpdate']);
+});
 
 
 
