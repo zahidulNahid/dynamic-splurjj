@@ -9,12 +9,15 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HeroController;
 use App\Http\Controllers\HeaderController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FooterController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\ContentController;
 use App\Http\Controllers\MobileMockUpController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\UpdateController;
 
 /*
@@ -58,6 +61,51 @@ Route::middleware('auth:api')->group(function () {
 });
 
 
+Route::middleware('auth:api')->group(function () {
+
+    // Videos API resource
+
+    /*shows all data as subcategory */
+
+
+    Route::get('contents/', [ContentController::class, 'index']);
+
+    //when single content is given in dashboard(edit single content)
+    Route::get('contents/{cat_id}/{sub_id}/{id}', [ContentController::class, 'index']);
+
+
+    //when all content is shown in dashboard for every subcategory
+    Route::get('contents/{cat_id}/{sub_id}', [ContentController::class, 'indexForSubCategory']);
+
+
+
+
+    Route::post('contents/', [ContentController::class, 'store']);
+    Route::put('contents/{id}', [ContentController::class, 'update']);
+    Route::delete('contents/{id}', [ContentController::class, 'destroy']);
+
+
+    // Categories API resource
+    Route::apiResource('categories', CategoryController::class);
+
+    // Subcategories API resource
+    Route::apiResource('subcategories', SubCategoryController::class);
+});
+
+
+
+//get latest 4 content is shown in frontend
+Route::get('contents/{cat_id}', [ContentController::class, 'indexFrontend']);
+
+
+// Go to Frontend and Backend API routes
+Route::get('categories', [CategoryController::class, 'index']);
+Route::get('subcategories', [SubCategoryController::class, 'index']);
+
+
+
+
+/* create by abu sayed (end)*/
 
 
 
