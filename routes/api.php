@@ -109,3 +109,6 @@ Route::get('subcategories', [SubCategoryController::class, 'index']);
 
 
 
+Route::options('{any}', function () {
+    return response()->json([], 204);
+})->where('any', '.*');
