@@ -58,6 +58,7 @@ Route::post('password/reset', [AuthController::class, 'passwordReset'])->name('p
 Route::middleware('auth:api')->group(function () {
     Route::put('settings/password', [SettingController::class, 'storeOrUpdatePassword']);
     Route::post('settings/info', [SettingController::class, 'storeOrUpdate']);
+    Route::get('settings/info', [SettingController::class, 'getProfile']);
 });
 
 
@@ -65,9 +66,10 @@ Route::middleware('auth:api','cors')->group(function () {
 
     // Videos API resource
 
-    /*shows all data as subcategory */
+    /*shows all data as subcategory */iop
 
 
+    // Route::get('contents/', [ContentController::class, 'index']);
     Route::get('contents/', [ContentController::class, 'index']);
 
     //when single content is given in dashboard(edit single content)
