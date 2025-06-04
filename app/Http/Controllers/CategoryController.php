@@ -141,6 +141,7 @@ class CategoryController extends Controller
     // PUT /api/categories/{id}
     public function update(Request $request, $id)
     {
+        return 0;
         try {
             $category = Category::findOrFail($id);
 
