@@ -171,6 +171,33 @@ class SettingController extends Controller
 
 
 
+    public function getProfile()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login first.'
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'first_name'  => $user->first_name,
+                'last_name'   => $user->last_name,
+                'phone'       => $user->phone,
+                'email'       => $user->email,
+                'country'     => $user->country,
+                'city'        => $user->city,
+                'profile_pic' => $user->profile_pic
+                    ? url('uploads/ProfilePics/' . $user->profile_pic)
+                    : null,
+            ]
+        ]);
+    }
+
 
 
 
