@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File; // Add this at the top of your controller
+use Illuminate\Support\Str;
+
 
 
 
@@ -204,9 +206,73 @@ class ContentController extends Controller
 
 
 
+    // public function store(Request $request)
+    // {
+    //     // Validate everything except tags (which we'll handle separately)
+    //     $validated = $request->validate([
+    //         'category_id' => 'required|exists:categories,id',
+    //         'subcategory_id' => 'required|exists:sub_categories,id',
+    //         'heading' => 'nullable|string',
+    //         'author' => 'nullable|string',
+    //         'date' => 'nullable|date',
+    //         'sub_heading' => 'nullable|string',
+    //         'body1' => 'nullable|string',
+    //         'image1' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10248',
+    //         'advertising_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10248',
+    //         // omit tags here intentionally
+    //     ]);
+
+    //     try {
+    //         // Handle image1 upload
+    //         if ($request->hasFile('image1')) {
+    //             $file = $request->file('image1');
+    //             $image1Name = time() . '_image1.' . $file->getClientOriginalExtension();
+    //             $file->move(public_path('uploads/Blogs'), $image1Name);
+    //             $validated['image1'] = 'uploads/Blogs/' . $image1Name;
+    //         }
+
+    //         // Handle advertising_image upload
+    //         if ($request->hasFile('advertising_image')) {
+    //             $file = $request->file('advertising_image');
+    //             $advertisingImageName = time() . '_advertising.' . $file->getClientOriginalExtension();
+    //             $file->move(public_path('uploads/Blogs'), $advertisingImageName);
+    //             $validated['advertising_image'] = 'uploads/Blogs/' . $advertisingImageName;
+    //         }
+
+    //         // Handle tags separately outside validation
+    //         $tagsInput = $request->input('tags');
+
+    //         if (is_string($tagsInput)) {
+    //             // if tags come as a comma-separated string, convert to array
+    //             $tagsArray = array_filter(array_map('trim', explode(',', $tagsInput)));
+    //         } elseif (is_array($tagsInput)) {
+    //             $tagsArray = $tagsInput;
+    //         } else {
+    //             $tagsArray = null;
+    //         }
+
+    //         $validated['tags'] = $tagsArray;
+
+    //         $content = Content::create($validated);
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Content created successfully.',
+    //             'data' => $content,
+    //         ], 201);
+    //     } catch (\Exception $e) {
+    //         Log::error('Content creation failed: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to create content.',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function store(Request $request)
     {
-        // Validate everything except tags (which we'll handle separately)
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'required|exists:sub_categories,id',
@@ -215,33 +281,43 @@ class ContentController extends Controller
             'date' => 'nullable|date',
             'sub_heading' => 'nullable|string',
             'body1' => 'nullable|string',
-            'image1' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10248',
-            'advertising_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10248',
-            // omit tags here intentionally
+
+            // Accept both file or text input (url or code)
+            'image1' => 'nullable',
+            'advertising_image' => 'nullable',
         ]);
 
         try {
-            // Handle image1 upload
+            $uploadPath = public_path('uploads/Blogs');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            // Handle image1
             if ($request->hasFile('image1')) {
                 $file = $request->file('image1');
                 $image1Name = time() . '_image1.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads/Blogs'), $image1Name);
+                $file->move($uploadPath, $image1Name);
                 $validated['image1'] = 'uploads/Blogs/' . $image1Name;
+            } else {
+                $image1Input = $request->input('image1');
+                $validated['image1'] = $image1Input; // could be a URL or embedded code
             }
 
-            // Handle advertising_image upload
+            // Handle advertising_image
             if ($request->hasFile('advertising_image')) {
                 $file = $request->file('advertising_image');
                 $advertisingImageName = time() . '_advertising.' . $file->getClientOriginalExtension();
-                $file->move(public_path('uploads/Blogs'), $advertisingImageName);
+                $file->move($uploadPath, $advertisingImageName);
                 $validated['advertising_image'] = 'uploads/Blogs/' . $advertisingImageName;
+            } else {
+                $advertisingInput = $request->input('advertising_image');
+                $validated['advertising_image'] = $advertisingInput; // could be a URL or embedded code
             }
 
-            // Handle tags separately outside validation
+            // Handle tags
             $tagsInput = $request->input('tags');
-
             if (is_string($tagsInput)) {
-                // if tags come as a comma-separated string, convert to array
                 $tagsArray = array_filter(array_map('trim', explode(',', $tagsInput)));
             } elseif (is_array($tagsInput)) {
                 $tagsArray = $tagsInput;
@@ -252,6 +328,15 @@ class ContentController extends Controller
             $validated['tags'] = $tagsArray;
 
             $content = Content::create($validated);
+
+            // Prepare URLs (only if they are paths)
+            $content->image1_url = (Str::startsWith($content->image1, 'uploads/Blogs'))
+                ? url($content->image1)
+                : $content->image1;
+
+            $content->advertising_image_url = (Str::startsWith($content->advertising_image, 'uploads/Blogs'))
+                ? url($content->advertising_image)
+                : $content->advertising_image;
 
             return response()->json([
                 'status' => true,
@@ -268,6 +353,7 @@ class ContentController extends Controller
             ], 500);
         }
     }
+
 
     public function update(Request $request, $id)
     {
