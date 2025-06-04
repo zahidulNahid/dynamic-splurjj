@@ -54,7 +54,7 @@ Route::middleware('auth:api')->group(function () {
 });
 
 
-Route::middleware('auth:api','cors')->group(function () {
+Route::middleware('auth:api')->group(function () {
 
     // Videos API resource
 
