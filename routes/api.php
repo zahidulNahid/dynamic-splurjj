@@ -1,18 +1,10 @@
 <?php
 
-use App\Http\Controllers\AchieveController;
-use App\Http\Controllers\Body1Controller;
-use App\Http\Controllers\Body2Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\HeroController;
-use App\Http\Controllers\HeaderController;
-use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeatureController;
-use App\Http\Controllers\FooterController;
-use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\MobileMockUpController;
@@ -66,7 +58,7 @@ Route::middleware('auth:api','cors')->group(function () {
 
     // Videos API resource
 
-    /*shows all data as subcategory */iop
+    /*shows all data as subcategory */
 
 
     // Route::get('contents/', [ContentController::class, 'index']);
