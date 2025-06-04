@@ -68,8 +68,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('contents/{cat_id}/{sub_id}/{id}', [ContentController::class, 'index']);
 
 
-    //when all content is shown in dashboard for every subcategory
-    Route::get('contents/{cat_id}/{sub_id}', [ContentController::class, 'indexForSubCategory']);
+
 
 
 
@@ -86,7 +85,8 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('subcategories', SubCategoryController::class);
 });
 
-
+//when all content is shown in dashboard for every subcategory
+Route::get('contents/{cat_id}/{sub_id}', [ContentController::class, 'indexForSubCategory']);
 
 //get latest 4 content is shown in frontend
 Route::get('contents/{cat_id}', [ContentController::class, 'indexFrontend']);
