@@ -174,7 +174,7 @@ class ContentController extends Controller
             $data = $contents->getCollection()->transform(function ($item) {
                 $item->image1_url = $item->image1 ? url($item->image1) : null;
                 $item->advertising_image_url = $item->advertising_image ? url($item->advertising_image) : null;
-                $item->category_name = $item->category?->name ?? null;
+                $item->category_name = $item->category?->category_name ?? null;
                 $item->subcategory_name = $item->subcategory?->name ?? null;
                 return $item;
             });
